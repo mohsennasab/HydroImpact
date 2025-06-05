@@ -1,5 +1,5 @@
 
-# 🌊 HydroImpcat: Dam Breach Post Processing Toolkit
+# 🌊 HydroImpact: Dam Breach Post Processing Toolkit
 
 A Streamlit application for processing and analyzing hydrodynamic modeling outputs from HEC-RAS dam breach simulations. This tool automates the extraction of flood impact data for buildings, cross-sections, and points of interest.
 
