@@ -1,0 +1,7 @@
+
+# Ignore folders
+dambreach/
+Resources/
+
+# Ignore specific file
+cross_section_profiles.html
