@@ -8,6 +8,9 @@ import folium
 from streamlit_folium import st_folium
 import zipfile
 
+# Add the parent directory to Python path to fix imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from app.config import REQUIRED_CRS, RASTER_TYPES
 from app.ui_helpers import (
     create_file_uploader_section, 
