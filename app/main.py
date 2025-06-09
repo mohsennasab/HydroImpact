@@ -2,11 +2,15 @@
 
 import streamlit as st
 import os
+import sys
 import tempfile
 from pathlib import Path
 import folium
 from streamlit_folium import st_folium
 import zipfile
+
+# Add the parent directory to Python path to fix imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.config import REQUIRED_CRS, RASTER_TYPES
 from app.ui_helpers import (
@@ -46,7 +50,8 @@ This tool processes HEC-RAS modeling outputs to extract summaries for:
 - 📊 Cross-section elevation and WSE profiles  
 - 📍 Point-based raster value extraction
 
-**Note:** All inputs will be automatically reprojected to EPSG:4326 (WGS84) if needed.
+**Note:** All inputs will be automatically reprojected to EPSG:4326 (WGS84) if needed.  
+<br>
 <span style="color:red"><b>Disclaimer:</b> The app is provided as is, without warranty of any kind. The author is not liable for any damages or claims arising from use.</span>
 """, unsafe_allow_html=True)
 
