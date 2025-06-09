@@ -179,6 +179,7 @@ Permission is granted, free of charge, for personal, academic, or internal non-c
 Commercial use and redistribution (in part or full, modified or not) are not permitted without written permission.
 
 ### Disclaimer
+
 The software is provided as is, without warranty of any kind. The author is not liable for any damages or claims arising from use.
 ---
 
