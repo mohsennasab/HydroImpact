@@ -49,8 +49,6 @@ This tool processes HEC-RAS modeling outputs to extract summaries for:
 - 🏢 Building footprints within flood extent
 - 📊 Cross-section elevation and WSE profiles  
 - 📍 Point-based raster value extraction
-
-**Note:** All inputs will be automatically reprojected to EPSG:4326 (WGS84) if needed.  
 <br>
 <span style="color:red"><b>Disclaimer:</b> The app is provided as is, without warranty of any kind. The author is not liable for any damages or claims arising from use.</span>
 """, unsafe_allow_html=True)
