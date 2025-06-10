@@ -62,44 +62,107 @@ if 'analysis_complete' not in st.session_state:
 # File upload section
 raster_files, vector_files = create_file_uploader_section()
 
-# CRS Check and Reprojection
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# CRS Check and Reprojection Section
+st.markdown("---")
+st.markdown(
+    """
+    <div background-color: transparent;">
+        <h3 style="margin-top: 0; color: inherit;">🌍 Coordinate System Verification</h3>
+        <p style="color: inherit;"><strong>Important:</strong> All files must be in EPSG:4326 (WGS84) coordinate system for proper analysis.</p>
+        <p style="color: inherit;">Click <strong>"Check CRS"</strong> first to verify your files, then use <strong>"Auto-Reproject"</strong> if needed.</p>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# Create a more prominent container with better spacing
 with st.container():
-    col1, col2 = st.columns(2)
+    # Add some spacing
+    st.markdown("<div style='margin: 20px 0;'></div>", unsafe_allow_html=True)
+    
+    # Create three columns for better layout
+    col1, col_spacer, col2 = st.columns([1, 0.1, 1])
     
     with col1:
-        if st.button("🔍 Check CRS"):
-            with st.spinner("Checking coordinate systems..."):
+        st.markdown(
+            """
+            <div style="text-align: center; padding: 10px; background-color: transparent; border-radius: 8px; margin-bottom: 10px;">
+                <h4 style="margin: 0; color: #1f77b4;">🔍 Verification Step</h4>
+                <p style="margin: 5px 0; font-size: 14px; color: #666;">Check if all files use EPSG:4326</p>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+        
+        if st.button("🔍 Check CRS", key="check_crs_btn", use_container_width=True, type="primary"):
+            with st.spinner("🔄 Checking coordinate systems..."):
                 all_match, messages = check_all_inputs_crs(raster_files, vector_files, REQUIRED_CRS)
                 display_crs_check_results(messages)
                 
                 if all_match:
-                    st.success("✅ All files have consistent CRS!")
+                    st.success("✅ Perfect! All files have consistent CRS (EPSG:4326)!")
+                    st.balloons()
                 else:
-                    st.warning("⚠️ Some files need reprojection")
+                    st.warning("⚠️ Some files need reprojection to EPSG:4326")
+                    st.info("👉 Use the 'Auto-Reproject' button to fix this automatically")
+
+    with col_spacer:
+        st.markdown(
+            """
+            <div style="text-align: center; padding: 40px 0;">
+                <p style="font-size: 24px; margin: 0;">➡️</p>
+                <p style="font-size: 18px; color: #666; margin: 0;">then</p>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
     
     with col2:
-        if st.button("🔄 Auto-Reproject All Files"):
+        st.markdown(
+            """
+            <div style="text-align: center; padding: 10px; background-color: transparent; border-radius: 8px; margin-bottom: 10px;">
+                <h4 style="margin: 0; color: #ff8c00;">🔄 Reprojection Step</h4>
+                <p style="margin: 5px 0; font-size: 14px; color: #666;">Convert files to EPSG:4326 if needed</p>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+        
+        if st.button("🔄 Auto-Reproject All Files", key="reproject_btn", use_container_width=True, type="secondary"):
             # First check CRS
             all_match, messages = check_all_inputs_crs(raster_files, vector_files, REQUIRED_CRS)
             
             if all_match:
-                st.success("✅ All files already in EPSG:4326!")
+                st.success("✅ All files already in EPSG:4326! No reprojection needed.")
+                st.info("🎉 You're ready to proceed with the analysis!")
             else:
-                # Show what needs reprojection
-                st.write("Files needing reprojection:")
-                for name, msg in messages.items():
-                    if "❌" in msg:
-                        st.write(f"  - {name}")
+                # Create an expandable section to show details
+                with st.expander("📋 Files requiring reprojection:", expanded=True):
+                    st.markdown("**The following files will be reprojected:**")
+                    needs_reprojection = []
+                    for name, msg in messages.items():
+                        if "❌" in msg:
+                            needs_reprojection.append(name)
+                            st.markdown(f"• **{name}**")
+                    
+                    if needs_reprojection:
+                        st.markdown(f"**Total files to reproject:** {len(needs_reprojection)}")
                 
-                # Reproject files
+                # Progress tracking with better visuals
+                st.markdown("### 🔄 Reprojection Progress")
                 progress_bar = st.progress(0)
                 status_text = st.empty()
                 
                 def progress_callback(progress, message):
                     progress_bar.progress(progress)
-                    status_text.text(message)
+                    status_text.markdown(f"**Status:** {message}")
                 
-                with st.spinner("Reprojecting files..."):
+                with st.spinner("🛠️ Reprojecting files to EPSG:4326..."):
                     reprojected_rasters, reprojected_vectors = reproject_all_files(
                         raster_files, 
                         vector_files,
@@ -110,8 +173,20 @@ with st.container():
                     # Store reprojected paths in session state
                     st.session_state['reprojected_rasters'] = reprojected_rasters
                     st.session_state['reprojected_vectors'] = reprojected_vectors
-                    
-                st.success("✅ All files reprojected to EPSG:4326!")
+                
+                # Clear progress indicators
+                progress_bar.empty()
+                status_text.empty()
+                
+                # Success message with celebration
+                st.success("🎉 All files successfully reprojected to EPSG:4326!")
+                st.balloons()
+                st.info("✅ You're now ready to proceed with the analysis!")
+
+# Add visual separator before the main analysis tabs
+st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("---")
+st.markdown("<br>", unsafe_allow_html=True)
 
 # Create tabs for different analyses
 tab1, tab2, tab3 = st.tabs(["🏢 Building Analysis", "📊 Cross Sections", "📍 Point Analysis"])
